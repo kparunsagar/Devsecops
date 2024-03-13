@@ -17,6 +17,17 @@ pipeline {
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kparunsagar/devsecops.git'
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def mvnHome = tool 'maven'
+                    withSonarQubeEnv() {
+                            bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sts"
+                    }
+                }
+            }
+        }
         
         stage("Compile"){
             steps{
