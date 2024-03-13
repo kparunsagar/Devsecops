@@ -29,14 +29,13 @@ pipeline {
                 sh "mvn test"
             }
         }
-        
-        stage("Sonarqube Analysis "){
-            steps{
-                withSonarQubeEnv('sonar') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Petclinicapp \
-                    -Dsonar.java.binaries=. \
-                    -Dsonar.projectKey=Petclinicapp '''
-    
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def mvnHome = tool 'maven'
+                    withSonarQubeEnv() {
+                        bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=jenkins"
+                    }
                 }
             }
         }
