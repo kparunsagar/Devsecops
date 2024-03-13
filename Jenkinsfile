@@ -29,10 +29,29 @@ pipeline {
                 sh "mvn test"
             }
         }
-        stage('SonarQube Analysis') {
+
+        stage('SCM') {
             steps {
-                withSonarQubeEnv(installationName: 'sonar')
-                    sh ' ./mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.1.3006:sonar'
+                git url: 'https://github.com/foo/bar.git'
+            }
+        }
+        stage('build && SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('My SonarQube Server') {
+                    // Optionally use a Maven environment you've configured already
+                    withMaven(maven:'Maven 3.5') {
+                        sh 'mvn clean package sonar:sonar'
+                    }
+                }
+            }
+        }
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = don't
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
         
