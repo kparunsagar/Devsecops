@@ -17,17 +17,6 @@ pipeline {
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kparunsagar/devsecops.git'
             }
         }
-
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def mvnHome = tool 'maven'
-                    withSonarQubeEnv() {
-                            bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sts"
-                    }
-                }
-            }
-        }
         
         stage("Compile"){
             steps{
@@ -51,7 +40,16 @@ pipeline {
                 }
             }
         }
-        
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def mvnHome = tool 'maven'
+                    withSonarQubeEnv() {
+                            bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sts"
+                    }
+                }
+            }
+        }
         stage("OWASP Dependency Check"){
             steps{
                 dependencyCheck additionalArguments: '--scan ./ --format HTML ', odcInstallation: 'Dependency-check'
