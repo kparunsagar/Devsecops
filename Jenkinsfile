@@ -30,12 +30,13 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
+        stage('SonarQube analysis') {
+            steps{
                 script {
-                    withSonarQubeEnv() {
-                    bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sts"
-                    }
+                    scannerHome = tool 'SonarQube';
+                }
+                withSonarQubeEnv('SonarQube') {
+                sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
         }
