@@ -31,9 +31,9 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(installationName: 'sonar')
-                    sh ' ./mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-                }
+                withSonarQubeEnv(installationName: 'sonar-scanner')
+                    sh ' ./mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.1.3006:sonar'
+            }
         }
         
         stage("OWASP Dependency Check"){
