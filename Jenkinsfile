@@ -31,13 +31,9 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    def mvnHome = tool 'maven'
-                    withSonarQubeEnv() {
-                        bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=jenkins"
-                    }
+                withSonarQubeEnv(installationName: 'sonar')
+                    sh ' ./mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
                 }
-            }
         }
         
         stage("OWASP Dependency Check"){
