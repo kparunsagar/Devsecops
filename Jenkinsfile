@@ -30,26 +30,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube') {
-            steps{
-                script {
-                    scannerHome = tool 'sonar-scanner';
-                }
-                withSonarQubeEnv('SonarQube') {
-                sh "${scannerHome}/bin/sonar-scanner"
-                }
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def mvnHome = tool 'maven'
-                    withSonarQubeEnv() {
-                            bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=javamaven"
-                    }
-                }
-            }
-        }
         stage("OWASP Dependency Check"){
             steps{
                 dependencyCheck additionalArguments: '--scan ./ --format HTML ', odcInstallation: 'Dependency-check'
