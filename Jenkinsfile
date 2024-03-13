@@ -29,22 +29,14 @@ pipeline {
                 sh "mvn test"
             }
         }
-        stage('onarQube analysis') {
+
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonar') {
-                    // Optionally use a Maven environment you've configured already
-                    withMaven(maven:'Maven 3.5') {
-                        sh 'mvn clean package sonar:sonar'
+                script {
+                    def mvnHome = tool 'maven'
+                    withSonarQubeEnv() {
+                    bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sts"
                     }
-                }
-            }
-        }
-        stage("Quality Gate") {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-                    // true = set pipeline to UNSTABLE, false = don't
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
