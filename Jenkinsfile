@@ -2,12 +2,12 @@ pipeline {
     agent any 
     
     tools{
-        jdk 'jdk7'
+        jdk 'jdk17'
         maven 'maven'
     }
     
     environment {
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME=tool 'sonarQube'
     }
     
     stages{
