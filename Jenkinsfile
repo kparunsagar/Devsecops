@@ -51,7 +51,7 @@ pipeline {
          stage("Docker build and Push"){
             steps{
                 scripts {
-                    withDockerRegistry(credentialsId: 'Docker') {
+                    withDockerRegistry(credentialsId: 'doc') {
                     sh "docker build -t kparun/petclinic:01 ."
                     
                     }
