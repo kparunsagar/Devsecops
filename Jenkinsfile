@@ -48,6 +48,15 @@ pipeline {
                 sh " mvn clean install"
             }
         }
+         stage("Docker build and Push"){
+            steps{
+                scripts {
+                    withDockerRegistry(credentialsId: 'Docker') {
+                    sh "docker build -t kparun/petclinic:01 ."
+                    sh "docker push -t kparun/petclinic:01"
+                }
+            }
+        }
         
     }
 }
