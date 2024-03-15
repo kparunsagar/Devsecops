@@ -36,7 +36,7 @@ class VetControllerTests {
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(vetController).build();
 
-        Vet james = new Vet();
+        Vet james = Vet();
         james.setFirstName("James");
         james.setLastName("Carter");
         james.setId(1);
