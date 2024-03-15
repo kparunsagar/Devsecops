@@ -66,7 +66,7 @@ pipeline {
         }
         stage("TRIVY"){
             steps{
-                sh " trivy image adijaiswal/pet-clinic123:$BUILD_NUMBER"
+                sh " trivy image kparun/petclinic:$BUILD_NUMBER"
             }
         }
     }
