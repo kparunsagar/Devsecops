@@ -47,7 +47,7 @@ class PetControllerTests {
             .setConversionService(formattingConversionServiceFactoryBean.getObject())
             .build();
 
-        PetType cat = new PetType();
+        PetType cat = PetType();
         cat.setId(3);
         cat.setName("hamster");
         given(this.clinicService.findPetTypes()).willReturn(Lists.newArrayList(cat));
