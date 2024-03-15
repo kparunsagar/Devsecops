@@ -53,7 +53,7 @@ pipeline {
                 scripts {
                     withDockerRegistry(credentialsId: 'Docker') {
                     sh "docker build -t kparun/petclinic:01 ."
-                    sh "docker push -t kparun/petclinic:01"
+                    sh "docker push kparun/petclinic:01"
                     }
                 }
             }
