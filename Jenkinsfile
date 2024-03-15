@@ -7,6 +7,7 @@ pipeline {
     }
     environment {
         SCANNER_HOME=tool 'sonarQube'
+        DOCKERHUB_CREDENTIALS = credentials('docker')
     }
     
     stages{
@@ -48,14 +49,19 @@ pipeline {
                 sh " mvn clean install"
             }
         }
-         stage("Docker build and Push"){
-            steps{
-                scripts {
-                    withDockerRegistry(credentialsId: 'doc') {
-                    sh "docker build -t kparun/petclinic:01 ."
-                    
-                    }
-                }
+         stage("Build docker image"){
+            steps {
+                sh 'docker build -t kparun/petclinic:$BUILD_NUMBER .'
+            }
+        }
+         stage("Login to docker hub"){
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+         stage("Docker push"){
+            steps {
+                sh 'docker push kparun/petclinic:$BUILD_NUMBER'
             }
         }
         
