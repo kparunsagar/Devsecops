@@ -22,6 +22,16 @@ pipeline {
                 sh "mvn clean compile"
             }
         }
+        stage("Sonarqube Analysis "){
+            steps{
+                withSonarQubeEnv('sonarQube') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Petclinic \
+                    -Dsonar.java.binaries=. \
+                    -Dsonar.projectKey=Petclinic '''
+    
+                }
+            }
+        }
         stage("OWASP Dependency Check"){
             steps{
                 dependencyCheck additionalArguments: '--scan ./ --format HTML ', odcInstallation: 'Dependency-check'
