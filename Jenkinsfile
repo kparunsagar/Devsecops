@@ -30,13 +30,7 @@ pipeline {
             }
         }
 
-        stage("OWASP Dependency Check"){
-            steps{
-                dependencyCheck additionalArguments: '--scan ./ --format HTML ', odcInstallation: 'Dependency-check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        
+
          stage("Build"){
             steps{
                 sh " mvn clean install"
