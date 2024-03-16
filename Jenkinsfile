@@ -8,6 +8,8 @@ pipeline {
     environment {
         SCANNER_HOME=tool 'sonarQube'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        CI = true
+        ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
     }
     
     stages{
