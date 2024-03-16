@@ -7,7 +7,7 @@ pipeline {
     }
     environment {
         SCANNER_HOME=tool 'sonarQube'
-        DOCKERHUB_CREDENTIALS = credentials('docker')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
     
     stages{
@@ -43,6 +43,27 @@ pipeline {
     
                 }
             }
+        }
+        stage('Packaging') {
+          steps {
+            step([$class: 'ArtifactArchiver', artifacts: '**/target/*.war', fingerprint: true])
+          }
+        }         
+        stage ("Artifactory Publish"){
+          steps {
+            script{
+              def server = Artifactory.server 'Artifactory'
+              def rtMaven = Artifactory.newMavenBuild()
+              //rtMaven.resolver server: server, releaseRepo: 'jenkinsdemo_repo', snapshotRepo: 'demopipeline'
+              rtMaven.deployer server: server, releaseRepo: 'petclinic-petclinic-releases', snapshotRepo: 'petclinic-petclinic-snapshot'
+              rtMaven.tool = 'maven'
+                            
+              def buildInfo = rtMaven.run pom: '$workspace/pom.xml', goals: 'clean install'
+              rtMaven.deployer.deployArtifacts = true
+              rtMaven.deployer.deployArtifacts buildInfo
+              server.publishBuildInfo buildInfo
+            }
+          }
         }
          stage("Build"){
             steps{
