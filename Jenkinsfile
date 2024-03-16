@@ -72,11 +72,6 @@ pipeline {
             }
           }
         }
-        stage("Build"){
-            steps{
-                sh " mvn clean install"
-            }
-        }
          stage("Build docker image"){
             steps {
                 sh 'docker build -t kparun/petclinic:$BUILD_NUMBER .'
