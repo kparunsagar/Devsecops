@@ -45,12 +45,7 @@ pipeline {
     
                 }
             }
-        }
-        stage('Packaging') {
-          steps {
-            step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar', fingerprint: true])
-          }
-        }         
+        }       
         stage ("Artifactory Publish"){
           steps {
             script{
