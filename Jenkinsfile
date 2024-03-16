@@ -30,6 +30,11 @@ pipeline {
                 sh "mvn test"
             }
         }
+        stage('Build') {
+            steps {
+                sh './mvnw clean install'
+            }
+        }
         stage("OWASP Dependency Check"){
             steps{
                 dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'DP'
