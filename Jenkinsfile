@@ -62,7 +62,7 @@ pipeline {
               def server = Artifactory.server 'Artifactory'
               def rtMaven = Artifactory.newMavenBuild()
               //rtMaven.resolver server: server, releaseRepo: 'jenkinsdemo_repo', snapshotRepo: 'demopipeline'
-              rtMaven.deployer server: server, releaseRepo: 'petclinic-petclinic-releases', snapshotRepo: 'petclinic-petclinic-snapshot'
+              rtMaven.deployer server: server, releaseRepo: 'petclinic-pet-release', snapshotRepo: 'petclinic-petclinic-snapshot'
               rtMaven.tool = 'maven'
                             
               def buildInfo = rtMaven.run pom: '$workspace/pom.xml', goals: 'clean install'
