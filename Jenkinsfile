@@ -49,7 +49,7 @@ pipeline {
 
         stage('Packaging') {
           steps {
-            step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar', fingerprint: true])
+            step([$class: 'ArtifactArchiver', artifacts: '**/target/*.war', fingerprint: true])
           }
         }
         stage ("Artifactory Publish"){
