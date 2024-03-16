@@ -30,11 +30,6 @@ pipeline {
                 sh "mvn test"
             }
         }
-        stage('Build') {
-            steps {
-                sh 'mvnw clean install'
-            }
-        }
         stage("OWASP Dependency Check"){
             steps{
                 dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'DP'
@@ -49,6 +44,11 @@ pipeline {
                     -Dsonar.projectKey=Petclinic '''
     
                 }
+            }
+        }
+        stage("Build"){
+            steps{
+                sh " mvn clean install"
             }
         }
         stage('Packaging') {
