@@ -30,7 +30,7 @@ pipeline {
         }
         stage("Build"){
             steps{
-                sh " mvn clean install"
+                sh " ./mvnw clean install"
             }
         }
         stage('Upload to Artifactory') {
