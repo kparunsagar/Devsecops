@@ -85,5 +85,10 @@ pipeline {
                 sh " trivy image kparun/petclinic:$BUILD_NUMBER"
             }
         }
+        stage("Deploy To Tomcat"){
+            steps{
+                sh "sudo cp -r /var/lib/jenkins/workspace/artisnapshot/target/petclinic.war /opt/apache-tomcat-9.0.87/webapps/ "
+            }
+        }
   }
 }
