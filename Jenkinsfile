@@ -6,10 +6,8 @@ pipeline {
         maven 'maven'
     }
     environment {
-        SCANNER_HOME=tool 'sonarQube'
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         CI = true
-        ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
+        ARTIFACTORY_ACCESS_TOKEN = credentials('Artifactory')
     }
     
     stages{
@@ -30,51 +28,21 @@ pipeline {
                 sh "mvn test"
             }
         }
-        stage("OWASP Dependency Check"){
-            steps{
-                dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'DP'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        stage("Sonarqube Analysis "){
-            steps{
-                withSonarQubeEnv('sonarQube') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Petclinic \
-                    -Dsonar.java.binaries=. \
-                    -Dsonar.projectKey=Petclinic '''
-    
-                }
-            }
-        }  
         stage("Build"){
             steps{
                 sh " mvn clean install"
             }
         }
-         stage("Build docker image"){
+        stage('Upload to Artifactory') {
+            agent {
+                docker {
+                    image 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0' 
+                        reuseNode true
+                }
+            }
             steps {
-                sh 'docker build -t kparun/petclinic:$BUILD_NUMBER .'
+                sh 'jfrog rt upload --url http://20.244.86.184:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/petclinc-SNAPSHOT.jar petclinc/'
             }
         }
-         stage("Login to docker hub"){
-            steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-            }
-        }
-         stage("Docker push"){
-            steps {
-                sh 'docker push kparun/petclinic:$BUILD_NUMBER'
-            }
-        }
-        stage("TRIVY"){
-            steps{
-                sh " trivy image kparun/petclinic:$BUILD_NUMBER"
-            }
-        }
-        stage("Deploy To Tomcat"){
-            steps{
-                sh "sudo cp -r /var/lib/jenkins/workspace/devsecops1/target/petclinic.war /opt/apache-tomcat-9.0.87/webapps/ "
-            }
-        }
-    }
+  }
 }
