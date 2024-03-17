@@ -33,14 +33,6 @@ pipeline {
                 sh " mvn clean install"
             }
         }
-        stage('Upload to Artifactory') {
-            agent {
-                docker {
-                    image 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0' 
-                        reuseNode true
-                }
-            }
-        }
         stage('Packaging') {
             steps {
                 step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar ', fingerprint: true])
