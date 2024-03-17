@@ -6,6 +6,8 @@ pipeline {
         maven 'maven'
     }
     environment {
+        SCANNER_HOME=tool 'sonarQube'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         CI = true
         ARTIFACTORY_ACCESS_TOKEN = credentials('Artifactory')
     }
@@ -26,6 +28,15 @@ pipeline {
          stage("Test Cases"){
             steps{
                 sh "mvn test"
+            }
+        }
+        stage("Sonarqube Analysis "){
+            steps{
+                withSonarQubeEnv('sonarQube') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=petclinic \
+                    -Dsonar.java.binaries=. \
+                    -Dsonar.projectKey=petclinic '''
+                }
             }
         }
         stage("Build"){
@@ -54,6 +65,25 @@ pipeline {
                 }
             }
         }
-
+        stage("Build docker image"){
+            steps {
+                sh 'docker build -t kparun/petclinic:$BUILD_NUMBER .'
+            }
+        }
+        stage("Login to docker hub"){
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage("Docker push"){
+            steps {
+                sh 'docker push kparun/petclinic:$BUILD_NUMBER'
+            }
+        }
+    stage("TRIVY"){
+      steps{
+        sh " trivy image kparun/petclinic:$BUILD_NUMBER"
+      }
+    }
   }
 }
