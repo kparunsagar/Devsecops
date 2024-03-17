@@ -41,27 +41,27 @@ pipeline {
                 }
             }
         }
-    stage('Packaging') {
-      steps {
-        step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar ', fingerprint: true])
-      }
-    }         
-    stage ("Artifactory Publish"){
-      steps {
-        script{
-          def server = Artifactory.server 'Artifactory'
-          def rtMaven = Artifactory.newMavenBuild()
-          //rtMaven.resolver server: server, releaseRepo: 'jenkinsdemo_repo', snapshotRepo: 'demopipeline'
-          rtMaven.deployer server: server, releaseRepo: 'pet-release', snapshotRepo: 'pet-snapshot'
-          rtMaven.tool = 'maven'
+        stage('Packaging') {
+            steps {
+                step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar ', fingerprint: true])
+            }
+        }         
+        stage ("Artifactory Publish"){
+            steps {
+                script{
+                    def server = Artifactory.server 'Artifactory'
+                    def rtMaven = Artifactory.newMavenBuild()
+                    //rtMaven.resolver server: server, releaseRepo: 'jenkinsdemo_repo', snapshotRepo: 'demopipeline'
+                    rtMaven.deployer server: server, releaseRepo: 'pet-release', snapshotRepo: 'pet-snapshot'
+                    rtMaven.tool = 'maven'
                             
-          def buildInfo = rtMaven.run pom: '$workspace/pom.xml', goals: 'clean install'
-          rtMaven.deployer.deployArtifacts = true
-          rtMaven.deployer.deployArtifacts buildInfo
-          server.publishBuildInfo buildInfo
+                    def buildInfo = rtMaven.run pom: '$workspace/pom.xml', goals: 'clean install'
+                    rtMaven.deployer.deployArtifacts = true
+                    rtMaven.deployer.deployArtifacts buildInfo
+                    server.publishBuildInfo buildInfo
+                }
+            }
         }
-      }
-    }
 
   }
 }
