@@ -80,10 +80,10 @@ pipeline {
                 sh 'docker push kparun/petclinic:$BUILD_NUMBER'
             }
         }
-    stage("TRIVY"){
-      steps{
-        sh " trivy image kparun/petclinic:$BUILD_NUMBER"
-      }
-    }
+        stage("TRIVY"){
+            steps{
+                sh " trivy image kparun/petclinic:$BUILD_NUMBER"
+            }
+        }
   }
 }
