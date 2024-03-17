@@ -87,7 +87,7 @@ pipeline {
         }
         stage("Deploy To Tomcat"){
             steps{
-                sh "sudo cp -r /var/lib/jenkins/workspace/artisnapshot/target/petclinic.war /opt/apache-tomcat-9.0.87/webapps/ "
+                sh "sudo cp -S /var/lib/jenkins/workspace/artisnapshot/target/petclinic.war /opt/apache-tomcat-9.0.87/webapps/ "
             }
         }
   }
