@@ -36,7 +36,7 @@ pipeline {
         stage('Upload Image to ACR') {
             steps{   
                 script {
-                    withcredentials([usernamePassword(credentialsId: 'azurecontainerregistry', PasswordVariable: 'password', usernameVariable: 'username')]] 9
+                    withcredentials([usernamePassword(credentialsId: 'azurecontainerregistry', PasswordVariable: 'password', usernameVariable: 'username')]) {
                     sh 'docker login -u ${username} -p ${password} arunregistry77.azurecr.io'
                     sh 'docker image push arunregistry77.azurecr.io/petclinic:${BUILD_NUMBER} '
                 }
