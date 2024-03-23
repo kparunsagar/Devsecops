@@ -5,14 +5,6 @@ pipeline {
         jdk 'jdk17'
         maven 'maven'
     }
-    environment {
-        //once you sign up for Docker hub, use that user_id here
-        registry = "arunregistry77/petclinic"
-        //- update your credentials ID after creating credentials for connecting to Docker Hub
-        registryCredential = 'azurecontainerregistry'
-        dockerImage = ''
-        registryUrl = 'arunregistry77.azurecr.io'
-    }
     
     stages{
         
@@ -38,17 +30,17 @@ pipeline {
         }
         stage("Build docker image"){
             steps {
-                sh 'docker build -t arunregistry77/petclinic:$BUILD_NUMBER .'
+                sh 'docker build -t arunregistry77.azurecr.io/petclinic:${BUILD_NUMBER} .'
             }
         }
         stage('Upload Image to ACR') {
-             steps{   
-                 script {
-                    docker.withRegistry( "http://${registryUrl}", registryCredential ) {
-                    dockerImage.push()
-                    }
+            steps{   
+                script {
+                    withcredentials([usernamePassword(credentialsId: 'azurecontainerregistry', PasswordVariable: 'password', usernameVariable: 'username')]] 9
+                    sh 'docker login -u ${username} -p ${password} arunregistry77.azurecr.io'
+                    sh 'docker image push arunregistry77.azurecr.io/petclinic:${BUILD_NUMBER} '
                 }
-              }
+            }
         }
 
     }
