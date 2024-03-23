@@ -36,12 +36,9 @@ pipeline {
                 sh " mvn clean install"
             }
         }
-        stage ('Build Docker image') {
+         stage("Build docker image"){
             steps {
-                
-                script {
-                    dockerImage = docker.build registryName
-                }
+                sh 'docker build -t kparun/petclinic:$BUILD_NUMBER .'
             }
         }
 
