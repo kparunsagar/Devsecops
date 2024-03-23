@@ -1,22 +1,24 @@
 pipeline {
-    agent {label "docker-build-node"}
+    agent any
     
     tools{
         jdk 'jdk17'
         maven 'maven'
     }
     environment {
-        SCANNER_HOME=tool 'sonarQube'
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
-        CI = true
-        ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
+        //once you sign up for Docker hub, use that user_id here
+        registry = "arunregistry77/petclinic"
+        //- update your credentials ID after creating credentials for connecting to Docker Hub
+        registryCredential = 'azurecontainerregistry'
+        dockerImage = ''
+        registryUrl = 'arunregistry77.azurecr.io'
     }
     
     stages{
         
         stage("Git Checkout"){
             steps{
-                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kparunsagar/Devsecops-PetclincApplication.git'
+                git branch: 'acr', changelog: false, poll: false, url: 'https://github.com/kparunsagar/Devsecops-PetclincApplication.git'
             }
         }
             
@@ -30,51 +32,19 @@ pipeline {
                 sh "mvn test"
             }
         }
-        stage("OWASP Dependency Check"){
-            steps{
-                dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'DP'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        stage("Sonarqube Analysis "){
-            steps{
-                withSonarQubeEnv('sonarQube') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Petclinic \
-                    -Dsonar.java.binaries=. \
-                    -Dsonar.projectKey=Petclinic '''
-    
-                }
-            }
-        }  
         stage("Build"){
             steps{
                 sh " mvn clean install"
             }
-        }
-         stage("Build docker image"){
+        stage ('Build Docker image') {
             steps {
-                sh 'docker build -t kparun/petclinic:$BUILD_NUMBER .'
+                
+                script {
+                    dockerImage = docker.build registryName
+                }
             }
         }
-         stage("Login to docker hub"){
-            steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-            }
-        }
-         stage("Docker push"){
-            steps {
-                sh 'docker push kparun/petclinic:$BUILD_NUMBER'
-            }
-        }
-        stage("TRIVY"){
-            steps{
-                sh " trivy image kparun/petclinic:$BUILD_NUMBER"
-            }
-        }
-        stage("Deploy To Tomcat"){
-            steps{
-                sh "sudo cp -r /var/lib/jenkins/workspace/devsecops1/target/petclinic.war /opt/apache-tomcat-9.0.87/webapps/ "
-            }
+
         }
     }
 }
