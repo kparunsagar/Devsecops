@@ -31,5 +31,12 @@ pipeline {
                  }
             }
         }
+        stage('Docker Run') {
+            steps{
+                script {
+                    sh 'docker run -d -p 8055:5000 --rm --name mypythonContainer arunregistry77.azurecr.io/petclinic:{BUILD_NUMBER}'
+                }
+            }
+        }
     }
 }
