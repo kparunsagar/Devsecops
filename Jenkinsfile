@@ -35,6 +35,7 @@ pipeline {
             steps{
                 sh " mvn clean install"
             }
+        }
         stage ('Build Docker image') {
             steps {
                 
