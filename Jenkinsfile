@@ -9,7 +9,7 @@ pipeline {
         //once you sign up for Docker hub, use that user_id here
         registry = "arunregistry77/petclinic"
         //- update your credentials ID after creating credentials for connecting to Docker Hub
-        registryCredential = 'azurecontainerregistry'
+        DOCKERHUB_CREDENTIALS = 'azurecontainerregistry'
         dockerImage = ''
         registryUrl = 'arunregistry77.azurecr.io'
     }
@@ -36,9 +36,19 @@ pipeline {
                 sh " mvn clean install"
             }
         }
-         stage("Build docker image"){
+        stage("Build docker image"){
             steps {
                 sh 'docker build -t kparun/petclinic:$BUILD_NUMBER .'
+            }
+        }
+        stage("Login to docker hub"){
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage("Docker push"){
+            steps {
+                sh 'docker push kparun/petclinic:$BUILD_NUMBER'
             }
         }
 
