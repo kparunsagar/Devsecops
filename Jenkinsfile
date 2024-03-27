@@ -1,5 +1,5 @@
 pipeline {
-    agent {label "docker-build-node"}
+    agent {label "node"}
     
     tools{
         jdk 'jdk17'
